@@ -1,9 +1,14 @@
 from fastapi import FastAPI
 from app.api import chat
 from app.core.config import settings
+from app.api import conversation
 app=FastAPI()
 app.include_router(
     chat.router
+    
+)
+app.include_router(
+    conversation.router
 )
 
 @app.get("/")
