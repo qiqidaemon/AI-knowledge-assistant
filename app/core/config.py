@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     MODEL_NAME:str="deepseek-chat"
     REDIS_HOST:str="localhost"
     REDIS_PORT:int=6379
-    DATABASE_URL="postgresql://alan:123456@localhost:5432/ai_assistant"
+    DATABASE_URL:str="postgresql://alan:123456@localhost:5432/ai_assistant"
 
     class Config:
         env_file=".env"

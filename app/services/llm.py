@@ -5,7 +5,8 @@ from app.core.config import settings
 from app.core.prompts import SYSTEM_PROMPT
 from app.core.logger import logger
 from app.services.memory import get_history
-from app.services.memory import add_message
+
+from app.services.db_service import save_message
 client=OpenAI(
     api_key=settings.DEEPSEEK_API_KEY,
     base_url= "https://api.deepseek.com"
@@ -29,7 +30,7 @@ def ask_llm_stream(question: str,conversation_id:str):
         "role":"user",
         "content":question
     })
-    add_message(
+    save_message(
             conversation_id,
             "user",
             question
@@ -66,7 +67,7 @@ def ask_llm_stream(question: str,conversation_id:str):
                 }
 
                 yield f"data:{json.dumps(data,ensure_ascii=False)}\n\n"
-        add_message(
+        save_message(
             conversation_id,
             "assistant",
             full_answer

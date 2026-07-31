@@ -1,5 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column,String,Integer,Text
+from sqlalchemy import Column,String,Integer,Text,DateTime
+from datetime import datetime
+
 
 class Base(DeclarativeBase):
     pass
@@ -20,4 +22,8 @@ class Message(Base):
     )
     content=Column(
         Text
+    )
+    created_at=Column(
+        DateTime,
+        default=datetime.utcnow
     )
