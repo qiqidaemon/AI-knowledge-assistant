@@ -1,0 +1,6 @@
+FastAPI是一个基于Python的现代Web框架。
+
+它支持异步请求处理，
+常用于构建AI应用后端服务。
+
+FastAPI提供自动生成Swagger API文档。

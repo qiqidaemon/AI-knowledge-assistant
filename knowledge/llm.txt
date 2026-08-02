@@ -1,0 +1,6 @@
+大语言模型（LLM）是一类基于Transformer架构的模型。
+
+LLM通过预测下一个token生成文本。
+
+AI应用通常通过API调用LLM，
+结合Memory、RAG和Tools构建智能系统。

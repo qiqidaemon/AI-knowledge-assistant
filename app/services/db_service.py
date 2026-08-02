@@ -17,3 +17,14 @@ def save_message(
         db.commit()
     finally:
         db.close()
+
+def get_message(conversation_id:str):
+    db=SessionLocal()
+    try:
+        messages=(db.query(Message).
+                  filter(Message.conversation_id==conversation_id).
+                  order_by(Message.created_at).
+                  all())
+        return messages
+    finally:
+        db.close()
