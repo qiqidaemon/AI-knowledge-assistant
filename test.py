@@ -1,7 +1,10 @@
-from app.rag.vector_store import collection
+from app.rag.retriever import search_knowledge
 
 
-result = collection.get()
+result = search_knowledge(
+    "介绍一下alan的信息"
+)
 
-
-print(result["ids"])
+for item in result:
+    print("__________")
+    print(item)

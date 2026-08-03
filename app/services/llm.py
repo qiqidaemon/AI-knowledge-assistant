@@ -7,6 +7,7 @@ from app.core.logger import logger
 from app.services.memory import get_history
 from app.tools import available_tools
 from app.rag.retriever import search_knowledge
+from app.rag.context import build_rag_context
 
 
 from app.services.db_service import save_message
@@ -37,23 +38,33 @@ def ask_llm(question: str,conversation_id:str):
     knowledge=search_knowledge(
         question
     )
+    context,source=build_rag_context(knowledge)
+    logger.info(
+        f"Retrieved knowlede:{knowledge}"
+    )
     full_answer=""
-    context="\n".join(knowledge)
+    
     messages=[
         {
             "role":"system",
             "content":
             SYSTEM_PROMPT
-            +
-            f"""
-以下是知识库资料：
+        }]
+    if context:
+            message.append(
+                 {
+                      "role":"system",
+                      "content":f"""
+以下是知识库提供的信息：
 {context}
-回答问题时请优先参考这些资料。
-如果资料中没有答案,请明确说明。
-"""
-        }
+请根据这些信息回答。   
+回答用户问题的时候：
+1.优先使用知识库信息
+2.不要编造不存在的信息
 
-    ]
+"""              
+            }
+            )
     messages.extend(history)
     messages.append({
         "role":"user",
@@ -105,6 +116,10 @@ def ask_llm(question: str,conversation_id:str):
                 messages=messages
             )
             answer=second_response.choices[0].message.content
+            if source:
+                 citation="\n\n参考来源:\n"
+                 for s in sources:
+                      citation
             print("Final answer",answer)
 
         else:

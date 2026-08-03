@@ -23,7 +23,7 @@ def chat(request:ChatRequest):
             "answer":answer
         }
     except Exception as e:
-        logger.erro(f"Chat failed:{str(e)}",exc_info=True)
+        logger.error(f"Chat failed:{str(e)}",exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=str(e)

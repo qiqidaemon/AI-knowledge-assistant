@@ -2,7 +2,13 @@ from fastapi import FastAPI
 from app.api import chat
 from app.core.config import settings
 from app.api import conversation
+from app.models.message import Base
+from app.core.database import engine
 app=FastAPI()
+Base.metadata.create_all(
+    bind=engine
+)
+
 app.include_router(
     chat.router
     
