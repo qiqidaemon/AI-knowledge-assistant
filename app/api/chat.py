@@ -1,6 +1,6 @@
 from fastapi import APIRouter,HTTPException
 from app.schemas.chat import ChatRequest,ChatResponse
-from app.services.llm import ask_llm
+from app.services.agent import run_agent
 from fastapi.responses import StreamingResponse
 from app.core.logger import logger
 import uuid
@@ -14,10 +14,12 @@ def chat(request:ChatRequest):
         "Received chat request"
     )
     try:
-        answer=ask_llm(
-            request.question,
+        question=request.question
+        answer=run_agent(
+            question,
             request.conversation_id
         )
+        print(f"the question is {question} ")
         print(f"we get the answer there {answer}")
         return {
             "answer":answer
