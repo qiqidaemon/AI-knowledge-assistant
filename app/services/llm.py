@@ -9,9 +9,18 @@ client=OpenAI(
 
 )
 
-def call_llm(messages):
+def call_llm(messages,tools=None):
+    
+    kwargs={
+        "model":settings.MODEL_NAME,
+        "messages":messages
+    }
+
+    if tools:
+        kwargs["tools"]=tools
+
     response=client.chat.completions.create(
-        model=settings.MODEL_NAME,
-        messages=messages
+        **kwargs
     )
-    return response.choices[0].message.content
+
+    return response

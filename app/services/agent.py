@@ -1,77 +1,104 @@
 import json
-
-from app.services.memory import get_history
-from app.router.llm_router import llm_route
-from app.rag.retriever import search_knowledge
-from app.rag.context import build_rag_context
-
-from app.tools.executor import execute_tools
-from app.services.llm  import call_llm
-
-from app.core.prompts import SYSTEM_PROMPT
+import time
 
 from app.core.logger import logger
+from app.core.prompts import SYSTEM_PROMPT
+
+from app.services.llm import call_llm
+from app.services.memory import get_history
+from app.services.db_service import save_message
+
+from app.tools.schemas import tools
+from app.tools.executor import execute_tools
 
 def run_agent(
         question:str,
         conversation_id:str
 ):
-    history=get_history(conversation_id)
-    router_result=llm_route(question)
-    router_result=json.loads(router_result)
-    intent=router_result["intent"]
-    logger.info(f"Intent:  {intent}")
-    context=""
-    source=[]
-    tool_result=None
+    start_time=time.time()
+    try:
+        history=get_history(conversation_id)
+        messages=[
+            {
+                "role":"system",
+                "content":SYSTEM_PROMPT
+            }
+        ]
+        messages.extend(history)
 
-    if intent=="rag":
-        knowledge=search_knowledge(question)
-        logger.info(f"Rag result :{knowledge}")
-        context,source=build_rag_context(knowledge)
-    elif intent=="tool":
-        tool_result=execute_tools("get_current_time")
-
-    messages=[
-        {
-            "role":"system",
-            "content":SYSTEM_PROMPT
-     }
-    ]
-
-    if context:
         messages.append(
-{
-"role":"system",
-"content":f"""
-知识库信息：
-{context}
-请根据知识库回答。
-"""
-
-
-}
-        )
-    if tool_result:
-        messages.append({
-            "role":"system",
-            "content":f"""
-工具返回：
-{tool_result}
-请根据结果回答。
-"""
-        }
-        )
-
-    messages.extend(
-        history
+        {
+        "role":"user",
+        "content":question
+    }
     )
-    answer=call_llm(messages)
+        logger.info(
+        f"User question:{question}"
+    )
 
-    if source :
-        answer+="\n\n参考来源:\n"
-        for s in source:
-            answer+=(
-                f"-{s['source']}\n"
+        response=call_llm(
+        messages=messages,
+        tools=tools
+    )
+        message=response.choices[0].message
+
+        if not message.tool_calls:
+            answer=message.content
+        else:
+            message.append(
+            message.model_dump()
+        )
+        for tool_call in message.tool_calls:
+            tool_name=tool_call.function.name
+            arguments=tool_call.function.arguments
+
+            logger.info(
+                f"Tool call:{tool_name} | args={arguments}"
             )
-    return answer
+
+            result=execute_tools(
+                tool_name,
+                arguments
+            )
+            tool_content=json.dumps(
+                result,
+                ensure_ascii=False
+            )if not isinstance(result,str) else result
+
+            message.append({
+                "role":"tool",
+                "tool_call_id":tool_call.id,
+                "content":tool_content
+
+
+            })
+        second_response=call_llm(messages=messages)
+        answer=second_response.choices[0].message.content
+
+        save_message(
+        conversation_id,
+        "user",
+        question
+    )
+
+        save_message(
+        conversation_id,
+        "assistant",
+        answer
+    )
+
+        return answer
+    except Exception as e:
+        logger.error(
+             f"Agent failed :{ str(e)}",
+             exc_info=True
+        )
+        raise
+
+    finally:
+        latency=time.time()-start_time
+        logger.info(
+            f"Agent Finished | latency ={latency:.2f}s"
+        )
+
+

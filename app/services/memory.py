@@ -1,7 +1,8 @@
 from typing import Dict,List
 import json
 from app.core.redis import redis_client
-Max_history=3
+from app.core.config import settings
+Max_history=settings.MAX_HISTORY
 
 def get_history(
         conversation_id:str

@@ -1,8 +1,9 @@
 from app.tools import available_tools
+import json
 
 def execute_tools(
         tool_name:str,
-        arguments=None
+        arguments:str
 ):
     tool=available_tools.get(
         tool_name
@@ -11,4 +12,5 @@ def execute_tools(
         raise ValueError(
             f"Tool {tool_name} not found"
             )
-    return tool()
+    args=json.loads(arguments)
+    return tool(**args)
