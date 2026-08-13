@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     REDIS_PORT:int=6379
     DATABASE_URL:str="postgresql://alan:123456@localhost:5432/ai_assistant"
     MAX_HISTORY:int=10
+    MAX_AGENT_STEPS:int=5
 
     class Config:
         env_file=".env"

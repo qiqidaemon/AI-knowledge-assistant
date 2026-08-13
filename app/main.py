@@ -20,7 +20,7 @@ app.include_router(
 @app.get("/")
 def root():
     return {
-        "message":"AI assistant is running"
+        "message":"AI assistant is running on   "
         "version:0.1 2026.7.28"
     }
 
