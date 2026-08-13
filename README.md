@@ -10,14 +10,14 @@ AI Knowledge Assistant
 
 
 1.基础对话
-![alt text](chat.png)
+![alt text](docs/images/chat.png)
 
 2.RAG
-![alt text](personal.png)
-![alt text](RAG.png)
+![alt text](docs/images/personal.png)
+![alt text](docs/images/RAG.png)
 
 3.Function calling
-![alt text](function_calling.png)
+![alt text](docs/images/function_calling.png)
 
 
 项目特点
