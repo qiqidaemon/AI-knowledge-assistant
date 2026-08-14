@@ -1,5 +1,7 @@
 from app.core.database import SessionLocal
+
 from app.models.message import Message
+from app.models.message import Conversation
 
 def save_message(
         conversation_id:str,
@@ -26,5 +28,17 @@ def get_message(conversation_id:str):
                   order_by(Message.created_at).
                   all())
         return messages
+    finally:
+        db.close()
+
+def create_conversation_record(conversation_id : str):
+    db=SessionLocal()
+    try:
+        conversation=Conversation(id=conversation_id,
+                                  title="新对话")
+        db.add(conversation)
+        db.commit()
+        db.refresh(conversation)
+        return conversation
     finally:
         db.close()
