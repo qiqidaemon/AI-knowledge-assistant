@@ -1,8 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 import uuid
 from app.schemas.chat import MessageResponse
 from app.services.db_service import (get_message,
-                                     create_conversation_record
+                                     create_conversation_record,delete_conversation
 )
 router=APIRouter()
 
@@ -27,3 +27,23 @@ def conversation_messages(
         conversation_id
     )
     return messages
+
+@router.delete("/conversation/{conversation_id}")
+def remove_conversation(
+    conversation_id: str
+):
+
+    deleted_count = delete_conversation(
+        conversation_id
+    )
+
+    if deleted_count == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Conversation not found"
+        )
+
+    return {
+        "message": "Conversation deleted successfully",
+        "conversation_id": conversation_id
+    }

@@ -1,7 +1,8 @@
 from app.core.database import SessionLocal
 
 from app.models.message import Message
-from app.models.message import Conversation
+from app.models.message import Conversation,Message
+
 
 def save_message(
         conversation_id:str,
@@ -40,5 +41,35 @@ def create_conversation_record(conversation_id : str):
         db.commit()
         db.refresh(conversation)
         return conversation
+    finally:
+        db.close()
+
+
+
+
+def delete_conversation(
+        conversation_id:str
+):
+    db=SessionLocal()
+
+    try:
+        db.query(Message).filter(
+            Message.conversation_id == conversation_id
+        ).delete
+
+        deleted_count=(
+            db.query(Conversation).filter(
+                 Conversation.id == conversation_id
+            ).delete()
+        )
+
+        db.commit()
+
+        return deleted_count
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         db.close()

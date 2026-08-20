@@ -1,6 +1,7 @@
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import Column,String,Integer,Text,DateTime
+
+from sqlalchemy import Column,String,Integer,Text,DateTime,ForeignKey
 from datetime import datetime,timezone
+from sqlalchemy.orm import DeclarativeBase,relationship
 
 
 class Base(DeclarativeBase):
@@ -27,6 +28,13 @@ class Conversation(Base):
         onupdate=lambda :datetime.now(timezone.utc),
         nullable=False
     )
+    messages=relationship(
+        "Message",
+        back_populates="conversation",
+        cascade="all,delete-orphan",
+        passive_deletes=True
+
+    )
 
 class Message(Base):
     __tablename__="messages"
@@ -37,6 +45,8 @@ class Message(Base):
     )
     conversation_id=Column(
         String,
+        ForeignKey("conversations.id",ondelete="CASCADE"),
+        nullable=False,
         index=True
     )
     role=Column(
@@ -48,4 +58,8 @@ class Message(Base):
     created_at=Column(
         DateTime,
         default=lambda :datetime.now(timezone.utc)
+    )
+    conversation=relationship(
+        "Conversation",
+        back_populates="messages"
     )

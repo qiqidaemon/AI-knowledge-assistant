@@ -1,3 +1,6 @@
+
+
+
 services:
 
   api:
@@ -80,7 +83,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
+  
+  frontend:
+    build: .
+    container_name: ai-assistant-frontend
+
+    command: >
+      streamlit run frontend/app.py
+      --server.address 0.0.0.0
+      --server.port 8501
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "8501:8501"
+
+    depends_on:
+      - api
 
 
 
