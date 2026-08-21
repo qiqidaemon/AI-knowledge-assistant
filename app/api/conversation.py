@@ -1,7 +1,7 @@
 from fastapi import APIRouter,HTTPException
 import uuid
 from app.schemas.chat import MessageResponse
-from app.services.db_service import (get_message,
+from app.services.db_service import (get_message,get_conversations,
                                      create_conversation_record,delete_conversation
 )
 router=APIRouter()
@@ -17,7 +17,14 @@ def create_conversation():
         "created_at":conversation.created_at
     }
 
-@router.get("/conversation{conversation_id}/messages",
+@router.get("/conversations")
+def list_conversations():
+    return get_conversations()
+
+
+
+
+@router.get("/conversation/{conversation_id}/messages",
             response_model=list[MessageResponse])
 
 def conversation_messages(
@@ -27,6 +34,8 @@ def conversation_messages(
         conversation_id
     )
     return messages
+
+
 
 @router.delete("/conversation/{conversation_id}")
 def remove_conversation(

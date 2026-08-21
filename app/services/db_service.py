@@ -55,7 +55,7 @@ def delete_conversation(
     try:
         db.query(Message).filter(
             Message.conversation_id == conversation_id
-        ).delete
+        ).delete()
 
         deleted_count=(
             db.query(Conversation).filter(
@@ -71,5 +71,16 @@ def delete_conversation(
         db.rollback()
         raise
 
+    finally:
+        db.close()
+
+def get_conversations():
+    db=SessionLocal()
+
+    try:
+        conversations=(
+            db.query(Conversation).order_by(Conversation.updated_at.desc()).all()
+        )
+        return conversations
     finally:
         db.close()

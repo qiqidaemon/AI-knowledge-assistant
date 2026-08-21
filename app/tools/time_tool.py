@@ -1,5 +1,7 @@
 from datetime import datetime
-def get_current_time():
-    return datetime.now().strftime(
+from zoneinfo import ZoneInfo
+def get_current_time(timezone: str = "Asia/Shanghai"):
+
+    return datetime.now(ZoneInfo(timezone)).strftime(
         "%Y-%m-%d %H:%M:%S"
         )

@@ -3,10 +3,23 @@ tools = [
         "type": "function",
         "function": {
             "name": "get_current_time",
-            "description": "获取当前时间",
+            "description": "获取指定时区的当前日期和时间",
             "parameters": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                    "timezone":{
+                        "type":"string",
+                        "description":(
+                            "IANA 时区名词,例如"
+                            "中国使用 Asia/Shanghai,"
+                            "纽约使用 America/New_York,"
+                            "东京使用 Asia/Tokyo"
+                        )
+
+                        
+                    }
+                },
+                "required":["timezone"]
             }
         }
     },
